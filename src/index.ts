@@ -1,3 +1,3 @@
-export const hello = () => {
-    console.log('world')
-}
+export * from './monads'
+export * from './types'
+export * from './utils'

@@ -31,6 +31,8 @@ v20.11.1
   - [Installation](#installation)
   - [Usage](#usage)
   - [API](#api)
+    - [Monads](#monads)
+    - [Utilities](#utilities)
   - [Contributing](#contributing)
   - [Versioning](#versioning)
   - [Authors](#authors)
@@ -68,7 +70,45 @@ TBD
 
 ## API
 
-TBD
+### Monads
+
+#### Either
+
+Either represents a value that is either a Left<L> (typically an error) or a Right<R> (a successful computation).
+
+```TS
+Either<L, R>
+```
+
+#### IO
+
+The IO monad captures side‑effectful computations in a safe, referentially transparent wrapper that can be composed without executing the effects until ".run()" is invoked.
+
+```TS
+IO<A>
+```
+
+#### State
+
+Implementation of the State monad
+
+```TS
+State<S, A>
+```
+
+#### StateT
+
+This transformer lets you add mutable‑state semantics on top of an _arbitrary_ underlying monad (IO, Either, Promise …) without executing the stateful logic until the final "run" call.
+
+```TS
+StateT<S, A>
+```
+
+### Utilities
+
+#### Do
+
+Do provides static helpers to interpret generator functions as monadic “do” blocks.
 
 ## Contributing
 
