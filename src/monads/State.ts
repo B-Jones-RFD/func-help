@@ -18,25 +18,31 @@ import type { Monad, StatePair } from '../types'
  * // result === 2, finalState === 2
  */
 export class State<S, A> implements Monad<A> {
-  private readonly runState: (state: S) => StatePair<S, A>
+  private constructor(
+    private readonly runState: (state: S) => StatePair<S, A>
+  ) {}
 
-  private constructor(runState: (state: S) => StatePair<S, A>) {
-    this.runState = runState
-  }
+  /* -----------------------------------------------------------------------
+   * Static constructors
+   * -------------------------------------------------------------------- */
 
-  /** Leaves the state unchanged and sets the result
-   * return :: a -> State s a
-   */
+  /** Pure */
   static return<S, A>(value: A): State<S, A> {
     return new State((s) => [value, s])
   }
 
-  /** Extract the underlying state function. */
-  toFunction(): (state: S) => StatePair<S, A> {
-    return this.runState
+  static of<S, A>(value: A): State<S, A> {
+    return this.return(value)
   }
 
-  /** Functor 'map'. */
+  /* -----------------------------------------------------------------------
+   * Monad operations
+   * -------------------------------------------------------------------- */
+
+  /**
+   * Map the value.
+   * @typeParam B New value type
+   */
   map<B>(f: (a: A) => B): State<S, B> {
     return new State((s0) => {
       const [a, s1] = this.runState(s0)
@@ -44,7 +50,10 @@ export class State<S, A> implements Monad<A> {
     })
   }
 
-  /** Monad */
+  /**
+   * Monad bind / flatMap / chain.
+   * @typeParam B New value type
+   */
   flatMap<B>(f: (a: A) => State<S, B>): State<S, B> {
     return new State((s0) => {
       const [a, s1] = this.runState(s0)
@@ -53,6 +62,10 @@ export class State<S, A> implements Monad<A> {
   }
 
   bind = this.flatMap
+
+  /* -----------------------------------------------------------------------
+   * Execution
+   * -------------------------------------------------------------------- */
 
   /** Run the computation and obtain both result and new state. */
   run(initial: S): StatePair<S, A> {
@@ -67,6 +80,15 @@ export class State<S, A> implements Monad<A> {
   /** Run and keep the state only (discard result). */
   exec(initial: S): S {
     return this.runState(initial)[1]
+  }
+
+  /* -----------------------------------------------------------------------
+   * Extractors
+   * -------------------------------------------------------------------- */
+
+  /** Extract the underlying state function. */
+  toFunction(): (state: S) => StatePair<S, A> {
+    return this.runState
   }
 
   /** Retrieve the current state without modifying it. */

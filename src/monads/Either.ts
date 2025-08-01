@@ -4,8 +4,14 @@ import type { Monad } from '../types'
  * Either Monad
  *
  * Either<L, R> represents a value that is either a Left<L> (typically an error)
- * or a Right<R> (a successful computation).  Only the Right branch is considered
- * for `map`/`flatMap` sequencing; the Left branch short‑circuits the chain.
+ * or a Right<R> (a successful computation).
+ *
+ * Either<L, R> ≅ Left<L> | Right<R>
+ *
+ * Only the Right branch is considered for `map`/`flatMap` sequencing; the Left branch short‑circuits the chain.
+ *
+ * @typeParam L usually the error type
+ * @typeParam R usually the success value typ e
  *
  * @example
  * type Err = string;
@@ -28,13 +34,14 @@ import type { Monad } from '../types'
  * // result === 'Reciprocal is 0.1'
  */
 export class Either<L, R> implements Monad<R> {
-  private readonly tag: 'left' | 'right'
-  private readonly value: L | R
+  private constructor(
+    private readonly tag: 'left' | 'right',
+    private readonly value: L | R
+  ) {}
 
-  private constructor(tag: 'left' | 'right', value: L | R) {
-    this.tag = tag
-    this.value = value
-  }
+  /* -----------------------------------------------------------------------
+   * Static constructors
+   * -------------------------------------------------------------------- */
 
   /** Construct left */
   static left<L, R = never>(value: L): Either<L, R> {
@@ -74,24 +81,36 @@ export class Either<L, R> implements Monad<R> {
     }
   }
 
-  /** Inspector */
+  /* -----------------------------------------------------------------------
+   * Inspectors
+   * -------------------------------------------------------------------- */
+
   isLeft(): this is Either<L, never> {
     return this.tag === 'left'
   }
 
-  /** Inspector */
   isRight(): this is Either<never, R> {
     return this.tag === 'right'
   }
 
-  /** Functor 'map'. */
+  /* -----------------------------------------------------------------------
+   * Functor / Monad operations
+   * -------------------------------------------------------------------- */
+
+  /**
+   * Map the right value.
+   * @typeParam B New right type
+   */
   map<B>(f: (r: R) => B): Either<L, B> {
     return this.isRight()
       ? Either.right(f(this.value as R))
       : (this as unknown as Either<L, B>)
   }
 
-  /** Monad */
+  /**
+   * Monad bind / flatMap / chain.
+   * @typeParam B New right type
+   */
   flatMap<B>(f: (r: R) => Either<L, B>): Either<L, B> {
     return this.isRight()
       ? f(this.value as R)
@@ -100,12 +119,23 @@ export class Either<L, R> implements Monad<R> {
 
   bind = this.flatMap
 
-  /** Fold the Either into a single value. */
+  /* -----------------------------------------------------------------------
+   * Extractors
+   * -------------------------------------------------------------------- */
+
+  /**
+   * Fold the Either into a single value.
+   * @param onLeft function to execute when left type
+   * @param onRight function to execute when right type
+   */
   fold<B>(onLeft: (l: L) => B, onRight: (r: R) => B): B {
     return this.isRight() ? onRight(this.value as R) : onLeft(this.value as L)
   }
 
-  /** Extract the Right value or provide a default derived from the Left. */
+  /**
+   * Extract the Right value or provide a default derived from the Left.
+   * @param fallback function to execute when left type
+   */
   getOrElse(fallback: (l: L) => R): R {
     return this.isRight() ? (this.value as R) : fallback(this.value as L)
   }

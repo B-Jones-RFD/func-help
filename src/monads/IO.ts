@@ -22,13 +22,13 @@ import { Monad } from '../types'
  * showTime.run();
  */
 export class IO<A> implements Monad<A> {
-  private readonly effect: () => A
+  private constructor(private readonly effect: () => A) {}
 
-  private constructor(effect: () => A) {
-    this.effect = effect
-  }
+  /* -----------------------------------------------------------------------
+   * Static constructors
+   * -------------------------------------------------------------------- */
 
-  /** Pure */
+  /** Pure lifts a value in to the IO context */
   static of<A>(value: A): IO<A> {
     return new IO(() => value)
   }
@@ -38,17 +38,35 @@ export class IO<A> implements Monad<A> {
     return new IO(effect)
   }
 
+  /**
+   * Lift a Promise‑returning effect into IO<Promise<A>> so it can be composed
+   * with other IO actions before being awaited.
+   */
+  static fromPromise<A>(promiseThunk: () => Promise<A>): IO<Promise<A>> {
+    return new IO(promiseThunk)
+  }
+
+  /* -----------------------------------------------------------------------
+   * Monad operations
+   * -------------------------------------------------------------------- */
+
   /** Execute the encapsulated side effect and obtain its result */
   run(): A {
     return this.effect()
   }
 
-  /** Functor `map` */
+  /**
+   * Map the value.
+   * @typeParam B New value type
+   */
   map<B>(f: (a: A) => B): IO<B> {
     return new IO(() => f(this.effect()))
   }
 
-  /** Monad */
+  /**
+   * Monad bind / flatMap / chain.
+   * @typeParam B New value type
+   */
   flatMap<B>(f: (a: A) => IO<B>): IO<B> {
     return new IO(() => f(this.effect()).run())
   }
@@ -62,13 +80,5 @@ export class IO<A> implements Monad<A> {
       sideEffect(val)
       return val
     })
-  }
-
-  /**
-   * Lift a Promise‑returning effect into IO<Promise<A>> so it can be composed
-   * with other IO actions before being awaited.
-   */
-  static fromPromise<A>(promiseThunk: () => Promise<A>): IO<Promise<A>> {
-    return new IO(promiseThunk)
   }
 }

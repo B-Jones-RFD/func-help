@@ -55,6 +55,10 @@ export class StateT<S, A> {
     this.Mof = ofF
   }
 
+  /* -----------------------------------------------------------------------
+   * Static constructors
+   * -------------------------------------------------------------------- */
+
   /** Pure */
   static of<S, A>(value: A, Mof: <T>(value: T) => Monad<T>): StateT<S, A> {
     return new StateT((s) => Mof([value, s]), Mof)
@@ -68,7 +72,14 @@ export class StateT<S, A> {
     return new StateT((s) => ma.map((a) => [a, s]), Mof)
   }
 
-  /** Functor */
+  /* -----------------------------------------------------------------------
+   * Monad operations
+   * -------------------------------------------------------------------- */
+
+  /**
+   * Map the value.
+   * @typeParam B New value type
+   */
   map<B>(f: (a: A) => B): StateT<S, B> {
     return new StateT(
       (s) => this.runStateT(s).map(([a, s1]) => [f(a), s1] as StatePair<S, B>),
@@ -76,7 +87,10 @@ export class StateT<S, A> {
     )
   }
 
-  /** Monad */
+  /**
+   * Monad bind / flatMap / chain.
+   * @typeParam B New value type
+   */
   flatMap<B>(f: (a: A) => StateT<S, B>): StateT<S, B> {
     return new StateT(
       (s0) => this.runStateT(s0).flatMap(([a, s1]) => f(a).runStateT(s1)),
