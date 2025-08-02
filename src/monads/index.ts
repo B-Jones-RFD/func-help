@@ -1,4 +1,5 @@
 export { Either } from './Either'
+export { Except } from './Except'
 export { IO } from './IO'
 export { State } from './State'
 export { StateT } from './StateT'

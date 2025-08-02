@@ -80,6 +80,14 @@ Either represents a value that is either a Left<L> (typically an error) or a Rig
 Either<L, R>
 ```
 
+#### Except
+
+Except is represents a value that is either an Error or a success value<A>. This is a helper for the Either monad using Error for the Left type and simplified semantics.
+
+```TS
+Except<A>
+```
+
 #### IO
 
 The IO monad captures side‑effectful computations in a safe, referentially transparent wrapper that can be composed without executing the effects until ".run()" is invoked.

@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, afterAll } from 'vitest'
-import { type Unit, Either, IO, State } from '../src'
+import { type Unit, Either, IO, State, Except } from '../src'
 
 describe('Either', () => {
   type Err = string
@@ -83,5 +83,50 @@ describe('State', () => {
 
     expect(result).toStrictEqual(expected)
     expect(finalState).toStrictEqual(expected)
+  })
+})
+
+describe('Except', () => {
+  const parseNumber = (s: string): Except<number> => {
+    const n = parseFloat(s)
+    return isNaN(n)
+      ? Except.failed(new Error(`'${s}' is not a number`))
+      : Except.ok(n)
+  }
+
+  const reciprocal = (n: number): Except<number> => {
+    return n === 0
+      ? Except.failed(new Error('division by zero'))
+      : Except.ok(1 / n)
+  }
+
+  it('should pass with correct data', () => {
+    const program = parseNumber('10').flatMap(reciprocal)
+    const expected = 'Reciprocal is 0.1'
+    const result = program.fold(
+      (err) => `Error: ${err.message}`,
+      (value) => `Reciprocal is ${value}`
+    )
+    expect(result).toStrictEqual(expected)
+  })
+
+  it('should error with invalid number', () => {
+    const program = parseNumber('0').flatMap(reciprocal)
+    const expected = 'Error: division by zero'
+    const result = program.fold(
+      (err) => `Error: ${err.message}`,
+      (value) => `Reciprocal is ${value}`
+    )
+    expect(result).toStrictEqual(expected)
+  })
+
+  it('should error with invalid data', () => {
+    const program = parseNumber('a').flatMap(reciprocal)
+    const expected = "Error: 'a' is not a number"
+    const result = program.fold(
+      (err) => `Error: ${err.message}`,
+      (value) => `Reciprocal is ${value}`
+    )
+    expect(result).toStrictEqual(expected)
   })
 })
