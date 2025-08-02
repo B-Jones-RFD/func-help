@@ -1,5 +1,11 @@
 # @b-jones-rfd/func-help
 
+## 0.2.0
+
+### Minor Changes
+
+- c536156: Added Except monad
+
 ## 0.1.1
 
 ### Patch Changes
