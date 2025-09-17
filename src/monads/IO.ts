@@ -1,4 +1,4 @@
-import { Monad } from '../types'
+import type { Monad } from '../types'
 
 /**
  * IO Monad

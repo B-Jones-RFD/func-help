@@ -1,4 +1,4 @@
-import { Monad } from '../types'
+import type { Monad } from '../types'
 
 /**
  * Async IO Monad
@@ -38,7 +38,6 @@ export class AsyncIO<A> implements Monad<A> {
     return new AsyncIO(effect)
   }
 
-
   /* -----------------------------------------------------------------------
    * Monad operations
    * -------------------------------------------------------------------- */
@@ -70,9 +69,8 @@ export class AsyncIO<A> implements Monad<A> {
   tap(sideEffect: (a: A) => void): AsyncIO<A> {
     return new AsyncIO(() => {
       const val = this.effect()
-      val.then(a => sideEffect(a))
+      val.then((a) => sideEffect(a))
       return val
     })
   }
 }
-

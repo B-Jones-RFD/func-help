@@ -5,6 +5,8 @@ export interface Monad<T> {
 
 export type Effect<A> = () => A
 
+export type AsyncEffect<A> = () => Promise<A>
+
 export type StatePair<S, A> = [A, S]
 
 export type Unit = void

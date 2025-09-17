@@ -1,4 +1,4 @@
-import { Monad, StatePair } from '../types'
+import type { Monad, StatePair } from '../types'
 
 /**
  * State Transformer
