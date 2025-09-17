@@ -1,5 +1,11 @@
 # @b-jones-rfd/func-help
 
+## 0.2.1
+
+### Patch Changes
+
+- 7e2c0cd: Add AsyncIO monad
+
 ## 0.2.0
 
 ### Minor Changes
