@@ -72,6 +72,14 @@ TBD
 
 ### Monads
 
+#### AsyncIO
+
+The AsyncIO monad captures side‑effectful asynchronous computations in a safe, referentially transparent wrapper that can be composed without executing the effects until ".run()" is invoked.
+
+```TS
+AsyncIO<A>
+```
+
 #### Either
 
 Either represents a value that is either a Left<L> (typically an error) or a Right<R> (a successful computation).
