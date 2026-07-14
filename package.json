@@ -12,12 +12,19 @@
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "lint": "tsc",
     "ci": "pnpm run lint && pnpm run test && pnpm run build",
-    "release": "pnpm run lint && pnpm run test && pnpm run build && changeset publish"
+    "release": "pnpm run build && pnpm publish -r --no-git-checks"
   },
   "keywords": [],
   "author": "B-Jones-RFD",
   "license": "MIT",
   "packageManager": "pnpm@10.12.1",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/B-Jones-RFD/func-help.git"
+  },
   "devDependencies": {
     "@changesets/cli": "^2.29.5",
     "@types/node": "^24.0.7",
