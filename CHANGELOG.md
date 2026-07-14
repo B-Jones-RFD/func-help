@@ -1,5 +1,11 @@
 # @b-jones-rfd/func-help
 
+## 0.3.1
+
+### Patch Changes
+
+- ab1e7ce: Update deployment config
+
 ## 0.3.0
 
 ### Minor Changes
